@@ -1,31 +1,43 @@
 import { useEffect } from "react";
 import dynamic from "next/dynamic";
 const Hydra = require("hydra-synth");
+import useHydraSync from "../hooks/useHydraSync";
 
-const Canvas = () => {
+interface CanvasProps {
+  detectAudio: boolean;
+  canvasNo: number;
+  makeGlobal: boolean;
+  hydraFunc: string;
+}
+
+const Canvas = ({
+  detectAudio,
+  canvasNo,
+  makeGlobal = false,
+  hydraFunc,
+}: CanvasProps) => {
+  const hydraSync = useHydraSync(window);
   const createHydra = () => {
+    // create a new canvas and append it to the feed
+    const feed = document.getElementById("feed");
+    const canvas = document.createElement("canvas");
+    canvas.id = `canvas${canvasNo}`;
+    feed?.appendChild(canvas);
+
+    // instanciate a new hydra
     const hydra = new Hydra({
-      detectAudio: false,
-      canvas: document.getElementById("can"),
-      makeGlobal: false,
+      detectAudio: detectAudio,
+      canvas: document.getElementById(canvas.id),
+      makeGlobal: makeGlobal,
+      autoLoop: false,
     }).synth;
-    hydra
-      // .gradient(0.1)
-      // .colorama(1)
-      // .color(0, () => Math.sin(hydra.time), 0.45)
-      // .colorama(0.01)
-      // .colorama(0.01)
-      // .colorama(0.01)
-      // .colorama(0.01)
-      // .mult(hydra.shape(4, () => Math.sin(hydra.time / 2)).repeat(1, 10))
-      // .out();
-      .osc(10, 0.1, 0.5)
-      .out();
+    hydraSync.register(hydra);
+    eval("hydra" + hydraFunc);
   };
 
   createHydra();
 
-  return <div className="canvas"></div>;
+  return null;
 };
 
 export default Canvas;

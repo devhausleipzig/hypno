@@ -1,5 +1,3 @@
-import React from "react";
-
 class HydraSync {
   static window: Window;
   static singleton: HydraSync | boolean = false;
@@ -21,8 +19,8 @@ class HydraSync {
     if (!HydraSync.singleton) {
       HydraSync.singleton = true;
       HydraSync.singleton = new HydraSync();
-      const step = HydraSync.singleton.step;
-      HydraSync.window.requestAnimationFrame(step);
+      const timeStep = HydraSync.singleton.step.bind(HydraSync.singleton);
+      HydraSync.window.requestAnimationFrame(timeStep);
     }
     this.hydraInstances = [];
     return HydraSync.singleton as HydraSync;
@@ -39,7 +37,7 @@ class HydraSync {
     });
 
     this.prevTimestamp = timestamp;
-    HydraSync.window.requestAnimationFrame(this.step);
+    HydraSync.window.requestAnimationFrame(this.step.bind(this));
   }
   register(hydraInstance: any) {
     this.hydraInstances.push(hydraInstance);
